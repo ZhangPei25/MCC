@@ -1,0 +1,46 @@
+{
+  "rules": {
+   "group": {
+      "$chatid": {
+        ".read": "data.child('members/'+auth.uid).exists()",
+        ".write": "(!data.exists() && auth !== null) || data.child('members/'+auth.uid).exists()" // anyone can create a new group, but only members can modify existing ones
+      }
+    },
+    "history": {
+    	"$chatid": {
+        // the messages for a room can be read and written to by any member
+        ".read": "root.child('group/'+$chatid+'/members/'+auth.uid).exists()",
+        ".write": "root.child('group/'+$chatid+'/members/'+auth.uid).exists()"
+      }
+    },
+    "image": {
+    	"$chatid": {
+        // the images for a room can be read and written to by any member
+        ".read": "root.child('group/'+$chatid+'/members/'+auth.uid).exists()",
+        ".write": "root.child('group/'+$chatid+'/members/'+auth.uid).exists()"
+      }
+    },
+    "privchats": {
+      "$userid": {
+        ".read": "auth.uid === $userid",
+        ".write": "auth.uid === $userid || newData.child(auth.uid).exists()"
+      }
+    },
+    "userchats": {
+      "$userid": {
+        ".read": "auth.uid === $userid",
+        "$chatid": {
+          ".write": "auth.uid === $userid || root.child('group/'+$chatid+'/members/'+auth.uid).exists()"
+        }
+      }
+    },
+    "usernames": {
+        ".read": "auth !== null",
+        ".write": "auth !== null"
+    },
+    "users": {
+        ".read": true,
+        ".write": "auth !== null"
+    }
+  }
+}
